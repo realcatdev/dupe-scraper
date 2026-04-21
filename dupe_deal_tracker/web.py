@@ -55,7 +55,7 @@ def _handler(config_path: str):
 
         def _status(self) -> None:
             try:
-                config = load_config(config_path, _api_key_override(self))
+                config = load_config(config_path, _api_key_override(self), _api_base_url_override(self))
                 state = PriceState.load(config.state_path)
                 self._json(
                     {
@@ -69,7 +69,7 @@ def _handler(config_path: str):
 
         def _scan(self, query: Dict[str, List[str]]) -> None:
             try:
-                config, state, client = _runtime(config_path, _api_key_override(self))
+                config, state, client = _runtime(config_path, _api_key_override(self), _api_base_url_override(self))
                 message = None
                 if query.get("refresh", ["0"])[0] in {"1", "true", "yes"}:
                     message = collect_baselines(client, state)
@@ -88,7 +88,7 @@ def _handler(config_path: str):
 
         def _baseline(self) -> None:
             try:
-                config, state, client = _runtime(config_path, _api_key_override(self))
+                config, state, client = _runtime(config_path, _api_key_override(self), _api_base_url_override(self))
                 message = collect_baselines(client, state)
                 self._json(
                     {
@@ -135,8 +135,12 @@ def _handler(config_path: str):
     return Handler
 
 
-def _runtime(config_path: str, api_key_override: str | None) -> tuple[Config, PriceState, DupeClient]:
-    config = load_config(config_path, api_key_override)
+def _runtime(
+    config_path: str,
+    api_key_override: str | None,
+    api_base_url_override: str | None,
+) -> tuple[Config, PriceState, DupeClient]:
+    config = load_config(config_path, api_key_override, api_base_url_override)
     state = PriceState.load(config.state_path)
     client = DupeClient(config.api_base_url, config.api_key)
     return config, state, client
@@ -145,6 +149,11 @@ def _runtime(config_path: str, api_key_override: str | None) -> tuple[Config, Pr
 def _api_key_override(handler: BaseHTTPRequestHandler) -> str | None:
     api_key = handler.headers.get("x-dupe-api-key", "").strip()
     return api_key or None
+
+
+def _api_base_url_override(handler: BaseHTTPRequestHandler) -> str | None:
+    api_base_url = handler.headers.get("x-dupe-api-base-url", "").strip()
+    return api_base_url or None
 
 
 def _config_payload(config: Config) -> Dict[str, Any]:

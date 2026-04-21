@@ -24,7 +24,14 @@ class Config:
     typical_prices: Dict[str, float] = field(default_factory=dict)
 
 
-def load_config(path: Optional[str], api_key_override: Optional[str] = None) -> Config:
+DEFAULT_API_BASE_URL = "https://dupe.fi"
+
+
+def load_config(
+    path: Optional[str],
+    api_key_override: Optional[str] = None,
+    api_base_url_override: Optional[str] = None,
+) -> Config:
     raw: Dict[str, Any] = {}
     if path:
         config_path = Path(path)
@@ -40,7 +47,12 @@ def load_config(path: Optional[str], api_key_override: Optional[str] = None) -> 
     if not api_key:
         raise ValueError(f"set an api key in ${api_key_env} or config field api_key")
 
-    api_base_url = str(raw.get("api_base_url") or os.environ.get("DUPE_API_BASE_URL") or "https://dupe.com")
+    api_base_url = str(
+        api_base_url_override
+        or raw.get("api_base_url")
+        or os.environ.get("DUPE_API_BASE_URL")
+        or DEFAULT_API_BASE_URL
+    )
     state_path = Path(str(raw.get("state_path") or ".dupe_deals/state.json"))
 
     return Config(

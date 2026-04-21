@@ -18,15 +18,19 @@ class FakeClient:
 
 
 class TrackerTests(unittest.TestCase):
-    def test_config_can_use_browser_supplied_api_key(self):
+    def test_config_can_use_browser_supplied_api_settings(self):
         with tempfile.TemporaryDirectory() as directory:
             config_path = Path(directory) / "config.json"
             config_path.write_text('{"api_base_url": "https://example.invalid"}', encoding="utf-8")
 
-            config = load_config(str(config_path), api_key_override="browser-key")
+            config = load_config(
+                str(config_path),
+                api_key_override="browser-key",
+                api_base_url_override="https://dupe.fi",
+            )
 
             self.assertEqual(config.api_key, "browser-key")
-            self.assertEqual(config.api_base_url, "https://example.invalid")
+            self.assertEqual(config.api_base_url, "https://dupe.fi")
 
     def test_scan_uses_configured_typical_price(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -1,9 +1,11 @@
 const state = {
   busy: false,
   apiKey: localStorage.getItem("dupe_api_key") || "",
+  apiBaseUrl: localStorage.getItem("dupe_api_base_url") || "https://dupe.fi",
 };
 
 const els = {
+  apiBaseUrl: document.querySelector("#apiBaseUrl"),
   apiKey: document.querySelector("#apiKey"),
   saveApiKey: document.querySelector("#saveApiKey"),
   clearApiKey: document.querySelector("#clearApiKey"),
@@ -91,6 +93,9 @@ async function getJson(path) {
   if (state.apiKey) {
     headers["x-dupe-api-key"] = state.apiKey;
   }
+  if (state.apiBaseUrl) {
+    headers["x-dupe-api-base-url"] = state.apiBaseUrl;
+  }
   const response = await fetch(path, { cache: "no-store", headers });
   return response.json();
 }
@@ -161,28 +166,45 @@ function escapeHtml(value) {
 
 function saveApiKey() {
   state.apiKey = els.apiKey.value.trim();
+  state.apiBaseUrl = normalizeBaseUrl(els.apiBaseUrl.value);
+  els.apiBaseUrl.value = state.apiBaseUrl;
+  localStorage.setItem("dupe_api_base_url", state.apiBaseUrl);
   if (state.apiKey) {
     localStorage.setItem("dupe_api_key", state.apiKey);
-    els.message.textContent = "API key saved in this browser.";
+    els.message.textContent = "API settings saved in this browser.";
   } else {
     localStorage.removeItem("dupe_api_key");
-    els.message.textContent = "API key cleared.";
+    els.message.textContent = "API base saved. API key cleared.";
   }
   loadStatus();
 }
 
 function clearApiKey() {
   state.apiKey = "";
+  state.apiBaseUrl = "https://dupe.fi";
   els.apiKey.value = "";
+  els.apiBaseUrl.value = state.apiBaseUrl;
   localStorage.removeItem("dupe_api_key");
-  els.message.textContent = "API key cleared.";
+  localStorage.setItem("dupe_api_base_url", state.apiBaseUrl);
+  els.message.textContent = "API settings reset.";
   loadStatus();
 }
 
+function normalizeBaseUrl(value) {
+  const trimmed = value.trim() || "https://dupe.fi";
+  return trimmed.replace(/\/+$/, "");
+}
+
+els.apiBaseUrl.value = state.apiBaseUrl;
 els.apiKey.value = state.apiKey;
 els.saveApiKey.addEventListener("click", saveApiKey);
 els.clearApiKey.addEventListener("click", clearApiKey);
 els.apiKey.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    saveApiKey();
+  }
+});
+els.apiBaseUrl.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     saveApiKey();
   }

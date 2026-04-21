@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -51,7 +52,7 @@ class DupeClient:
                 raw = response.read().decode("utf-8")
         except urllib.error.HTTPError as exc:
             body = exc.read().decode("utf-8", errors="replace")
-            raise DupeApiError(f"http {exc.code}: {body}") from exc
+            raise DupeApiError(f"http {exc.code}: {_clean_error_body(body)}") from exc
         except urllib.error.URLError as exc:
             raise DupeApiError(f"request failed: {exc.reason}") from exc
 
@@ -66,3 +67,14 @@ class DupeClient:
         if not isinstance(payload, dict):
             raise DupeApiError("dupe returned an unexpected response shape")
         return payload
+
+
+def _clean_error_body(body: str) -> str:
+    compact = body.strip()
+    if "<html" in compact[:200].lower() or "<!doctype html" in compact[:200].lower():
+        title_match = re.search(r"<title[^>]*>(.*?)</title>", compact, flags=re.IGNORECASE | re.DOTALL)
+        if title_match:
+            title = re.sub(r"\s+", " ", title_match.group(1)).strip()
+            return f"html response: {title}"
+        return "html response from server"
+    return compact[:1000]

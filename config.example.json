@@ -1,5 +1,5 @@
 {
-  "api_base_url": "https://dupe.com",
+  "api_base_url": "https://dupe.fi",
   "api_key_env": "DUPE_API_KEY",
   "state_path": ".dupe_deals/state.json",
   "deal_threshold": 0.82,
