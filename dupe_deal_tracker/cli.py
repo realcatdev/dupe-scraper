@@ -10,11 +10,15 @@ from .config import Config, load_config
 from .models import Deal
 from .state import PriceState
 from .tracker import collect_baselines, scan_for_deals
+from .web import run_web_app
 
 
 def main(argv: Optional[Iterable[str]] = None) -> int:
     parser = build_parser()
     args = parser.parse_args(list(argv) if argv is not None else None)
+
+    if args.command == "web":
+        return run_web_app(args.config, args.host, args.port)
 
     try:
         config = load_config(args.config)
@@ -54,6 +58,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     daemon = subparsers.add_parser("daemon", help="continuously refresh baselines and scan")
     daemon.add_argument("--limit", type=int, default=25, help="maximum deals to print per scan")
+
+    web = subparsers.add_parser("web", help="run the browser app")
+    web.add_argument("--host", default="127.0.0.1", help="host interface to bind")
+    web.add_argument("--port", type=int, default=8787, help="port to bind")
 
     return parser
 

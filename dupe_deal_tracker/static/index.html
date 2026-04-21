@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dupe Deal Tracker</title>
+    <link rel="stylesheet" href="/static/app.css">
+  </head>
+  <body>
+    <main class="shell">
+      <aside class="rail" aria-label="Tracker controls">
+        <div>
+          <p class="eyebrow">Dupe v1</p>
+          <h1>Deal Tracker</h1>
+          <p class="summary">Live marketplace listings compared against configured and learned typical prices.</p>
+        </div>
+
+        <section class="control-panel" aria-label="Actions">
+          <button id="scan" type="button">Scan now</button>
+          <button id="scanRefresh" type="button" class="secondary">Refresh and scan</button>
+          <button id="baseline" type="button" class="ghost">Update baselines</button>
+        </section>
+
+        <section class="settings" aria-label="Current settings">
+          <div>
+            <span>Threshold</span>
+            <strong id="threshold">--</strong>
+          </div>
+          <div>
+            <span>Min profit</span>
+            <strong id="minProfit">--</strong>
+          </div>
+          <div>
+            <span>Filters</span>
+            <strong id="filters">--</strong>
+          </div>
+          <div>
+            <span>Learned prices</span>
+            <strong id="learned">--</strong>
+          </div>
+        </section>
+      </aside>
+
+      <section class="workspace" aria-label="Deal results">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Market scan</p>
+            <h2>Current opportunities</h2>
+          </div>
+          <div id="status" class="status">Starting</div>
+        </header>
+
+        <div class="metric-strip" aria-label="Scan metrics">
+          <div>
+            <span>Deals</span>
+            <strong id="dealCount">0</strong>
+          </div>
+          <div>
+            <span>Best profit</span>
+            <strong id="bestProfit">$0.00</strong>
+          </div>
+          <div>
+            <span>Best discount</span>
+            <strong id="bestDiscount">0%</strong>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Price</th>
+                <th>Typical</th>
+                <th>Profit</th>
+                <th>Discount</th>
+                <th>Source</th>
+                <th>Listing</th>
+              </tr>
+            </thead>
+            <tbody id="deals">
+              <tr>
+                <td colspan="7" class="empty">No scan has run yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <footer class="log" aria-live="polite">
+          <span>Last message</span>
+          <strong id="message">Waiting for config.</strong>
+        </footer>
+      </section>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
