@@ -1,0 +1,21 @@
+{
+  "api_base_url": "https://dupe.com",
+  "api_key_env": "DUPE_API_KEY",
+  "state_path": ".dupe_deals/state.json",
+  "deal_threshold": 0.82,
+  "min_profit_usdc": 5,
+  "min_price_usdc": 1,
+  "max_price_usdc": 1000000,
+  "listing_limit": 250,
+  "summary_refresh_minutes": 5,
+  "scan_interval_seconds": 60,
+  "min_samples_for_learned_price": 3,
+  "item_filters": [
+    "AK-47",
+    "M4A1-S",
+    "★"
+  ],
+  "typical_prices": {
+    "AK-47 | Redline (Field-Tested)": 50
+  }
+}
