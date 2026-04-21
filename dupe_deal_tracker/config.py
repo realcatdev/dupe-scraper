@@ -24,7 +24,7 @@ class Config:
     typical_prices: Dict[str, float] = field(default_factory=dict)
 
 
-def load_config(path: Optional[str]) -> Config:
+def load_config(path: Optional[str], api_key_override: Optional[str] = None) -> Config:
     raw: Dict[str, Any] = {}
     if path:
         config_path = Path(path)
@@ -36,7 +36,7 @@ def load_config(path: Optional[str]) -> Config:
             raw = {}
 
     api_key_env = str(raw.get("api_key_env") or "DUPE_API_KEY")
-    api_key = str(raw.get("api_key") or os.environ.get(api_key_env) or "")
+    api_key = str(api_key_override or raw.get("api_key") or os.environ.get(api_key_env) or "")
     if not api_key:
         raise ValueError(f"set an api key in ${api_key_env} or config field api_key")
 

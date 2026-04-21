@@ -16,6 +16,14 @@
         </div>
 
         <section class="control-panel" aria-label="Actions">
+          <label class="api-key-field" for="apiKey">
+            <span>API key</span>
+            <input id="apiKey" type="password" autocomplete="off" placeholder="Bearer key">
+          </label>
+          <div class="api-actions">
+            <button id="saveApiKey" type="button" class="secondary">Save key</button>
+            <button id="clearApiKey" type="button" class="ghost">Clear</button>
+          </div>
           <button id="scan" type="button">Scan now</button>
           <button id="scanRefresh" type="button" class="secondary">Refresh and scan</button>
           <button id="baseline" type="button" class="ghost">Update baselines</button>

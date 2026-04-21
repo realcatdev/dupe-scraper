@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from dupe_deal_tracker.config import Config
+from dupe_deal_tracker.config import Config, load_config
 from dupe_deal_tracker.state import PriceState
 from dupe_deal_tracker.tracker import collect_baselines, scan_for_deals
 
@@ -18,6 +18,16 @@ class FakeClient:
 
 
 class TrackerTests(unittest.TestCase):
+    def test_config_can_use_browser_supplied_api_key(self):
+        with tempfile.TemporaryDirectory() as directory:
+            config_path = Path(directory) / "config.json"
+            config_path.write_text('{"api_base_url": "https://example.invalid"}', encoding="utf-8")
+
+            config = load_config(str(config_path), api_key_override="browser-key")
+
+            self.assertEqual(config.api_key, "browser-key")
+            self.assertEqual(config.api_base_url, "https://example.invalid")
+
     def test_scan_uses_configured_typical_price(self):
         with tempfile.TemporaryDirectory() as directory:
             state = PriceState(Path(directory) / "state.json")

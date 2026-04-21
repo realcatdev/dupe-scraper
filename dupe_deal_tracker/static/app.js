@@ -1,8 +1,12 @@
 const state = {
   busy: false,
+  apiKey: localStorage.getItem("dupe_api_key") || "",
 };
 
 const els = {
+  apiKey: document.querySelector("#apiKey"),
+  saveApiKey: document.querySelector("#saveApiKey"),
+  clearApiKey: document.querySelector("#clearApiKey"),
   scan: document.querySelector("#scan"),
   scanRefresh: document.querySelector("#scanRefresh"),
   baseline: document.querySelector("#baseline"),
@@ -83,7 +87,11 @@ function renderDeals(deals) {
 }
 
 async function getJson(path) {
-  const response = await fetch(path, { cache: "no-store" });
+  const headers = {};
+  if (state.apiKey) {
+    headers["x-dupe-api-key"] = state.apiKey;
+  }
+  const response = await fetch(path, { cache: "no-store", headers });
   return response.json();
 }
 
@@ -151,6 +159,34 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+function saveApiKey() {
+  state.apiKey = els.apiKey.value.trim();
+  if (state.apiKey) {
+    localStorage.setItem("dupe_api_key", state.apiKey);
+    els.message.textContent = "API key saved in this browser.";
+  } else {
+    localStorage.removeItem("dupe_api_key");
+    els.message.textContent = "API key cleared.";
+  }
+  loadStatus();
+}
+
+function clearApiKey() {
+  state.apiKey = "";
+  els.apiKey.value = "";
+  localStorage.removeItem("dupe_api_key");
+  els.message.textContent = "API key cleared.";
+  loadStatus();
+}
+
+els.apiKey.value = state.apiKey;
+els.saveApiKey.addEventListener("click", saveApiKey);
+els.clearApiKey.addEventListener("click", clearApiKey);
+els.apiKey.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    saveApiKey();
+  }
+});
 els.scan.addEventListener("click", () => scan(false));
 els.scanRefresh.addEventListener("click", () => scan(true));
 els.baseline.addEventListener("click", baseline);
